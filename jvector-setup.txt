@@ -1,0 +1,125 @@
+JVector:
+
+1. Fork JVector
+Fork and clone https://github.com/jbellis/jvector
+(in this case the code is at the prime branch in https://github.com/HanSolo/jvector)
+
+
+2. Set JAVA_HOME to a build of JDK 22
+
+
+3. disable org.apache.rat in:
+jvector/pom.xml
+jvector/jvector-base/pom.xml
+
+
+4. Build and install jvector
+./mvnw clean install
+
+
+5. Copy pom file for Zulu and Zing
+Create two copies of the file jvector/jvector-examples/pom.xml and name them:
+pom.xml.prime
+pom.xml.zulu
+
+Rename the original file jvector/jvector-examples/pom.xml to pom.xml.original
+
+
+6. Modify the copied pom files
+edit /jvector/jvector-examples/pom.xml.prime
+look for 
+<profiles>
+    <profile>
+        <id>jdk11</id>
+        ...
+        <execution>
+            <id>bench</id>
+            <configuration>
+                <arguments>
+                    
+                    <argument>-Xmx64G</argument>
+                    <argument>-ea</argument>
+                    <argument>-Xlog:gc*:file=gc-bench.log</argument>
+                    <argument>-XX:ProfileLogIn=rn-bench.profile</argument>  <!-- Enable/Disable for ReadyNow -->
+                    <argument>-XX:ProfileLogOut=rn-bench.profile</argument> <!-- Enable/Disable for ReadyNow -->
+                    
+                    <argument>io.github.jbellis.jvector.example.Bench</argument>
+                    <argument>${benchArgs}</argument>
+                </arguments>    
+
+
+edit /jvector/jvector-examples/pom.xml.zulu
+look for 
+<profiles>
+    <profile>
+        <id>jdk11</id>
+        ...
+        <execution>
+            <id>bench</id>
+            <configuration>
+                <arguments>
+                    
+                    <argument>-Xmx64G</argument>
+                    <argument>-ea</argument>
+                    <argument>-Xlog:gc*:file=gc-bench.log</argument>
+                    
+                    <argument>io.github.jbellis.jvector.example.Bench</argument>
+                    <argument>${benchArgs}</argument>
+                </arguments>
+
+
+7. Copy datasets from /home/shared/jvector_datasets/1M to /home/shared/jvector/fvec/wikipedia_squad/1M
+
+
+8. Modify code in MultiFileDatasource.java
+Search for the method byName() and add the following code:
+
+// ********** Bigger datasets manually downloaded from S3 **********
+put("ada_002", new MultiFileDatasource("ada_002",
+        "wikipedia_squad/1M/ada_002_1000000_base_vectors.fvec",
+        "wikipedia_squad/1M/ada_002_1000000_query_vectors_10000.fvec",
+        "wikipedia_squad/1M/ada_002_1000000_indices_query_10000.ivec"));
+put("intfloat_e5_base", new MultiFileDatasource("intfloat_e5_base",
+        "wikipedia_squad/1M/intfloat_e5-base-v2_1000000_base_vectors.fvec",
+        "wikipedia_squad/1M/intfloat_e5-base-v2_1000000_query_vectors_10000.fvec",
+        "wikipedia_squad/1M/intfloat_e5-base-v2_1000000_indices_query_10000.ivec"));
+put("intfloat_e5_large", new MultiFileDatasource("intfloat_e5_large",
+        "wikipedia_squad/1M/intfloat_e5-large-v2_1000000_base_vectors.fvec",
+        "wikipedia_squad/1M/intfloat_e5-large-v2_1000000_query_vectors_10000.fvec",
+        "wikipedia_squad/1M/intfloat_e5-large-v2_1000000_indices_query_10000.ivec"));
+put("intfloat_e5_small", new MultiFileDatasource("intfloat_e5_small",
+        "wikipedia_squad/1M/intfloat_e5-small-v2_1000000_base_vectors.fvec",
+        "wikipedia_squad/1M/intfloat_e5-small-v2_1000000_query_vectors_10000.fvec",
+        "wikipedia_squad/1M/intfloat_e5-small-v2_1000000_indices_query_10000.ivec"));
+put("textembedding-gecko", new MultiFileDatasource("textembedding-gecko",
+        "wikipedia_squad/1M/textembedding-gecko_1000000_base_vectors.fvec",
+        "wikipedia_squad/1M/textembedding-gecko_1000000_query_vectors_10000.fvec",
+        "wikipedia_squad/1M/textembedding-gecko_1000000_indices_query_10000.ivec"));
+// *******************************************************************
+
+
+9. Modify the code in Bench.java
+Search for var coreFiles = List.of(...
+
+and add the following to this list:
+"ada_002",
+"intfloat_e5_base",
+"intfloat_e5_large",
+"intfloat_e5_small",
+"textembedding-gecko");
+
+
+10. Switch to JVM of choice
+e.g. prime17
+
+
+11. Rename the correct pom file
+In case you ran against Zulu before, don't forget to rename the jvector/jvector-examples/pom.xml to jvector/jvector-examples/pom.xml.zulu
+e.g. if you would like to run against Prime, rename
+jvector/jvector-examples/pom.xml.prime to jvector/jvector-examples/pom.xml
+
+
+12. Running the benchmark
+./mvnw -Pjdk11 compile exec:exec@bench >> Prime_17_bench_64G_1.txt
+
+
