@@ -31,3 +31,4 @@ hdf5/
 ### asdf (or other version managers)
 .tool-versions
 /Prime_17_bench.txt
+/Zulu_17_bench_64G.txt
