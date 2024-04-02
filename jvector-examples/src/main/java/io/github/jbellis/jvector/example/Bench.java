@@ -65,7 +65,13 @@ public class Bench {
                 "openai-v3-small-100k",
                 "nv-qa-v4-100k",
                 "colbert-1M",
-                "gecko-100k");
+                "gecko-100k",
+                // ********** Files manually added to MultiFileDatasource **********
+                "ada_002",
+                "intfloat_e5_base",
+                "intfloat_e5_large",
+                "intfloat_e5_small",
+                "textembedding-gecko");
         executeNw(coreFiles, pattern, buildCompression, searchCompression, mGrid, efConstructionGrid, efSearchGrid);
 
         var extraFiles = List.of(

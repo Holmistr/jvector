@@ -66,6 +66,31 @@ public class MultiFileDatasource {
                                                    "wikipedia_squad/1M/colbertv2.0_128_base_vectors_1000000.fvec",
                                                    "wikipedia_squad/1M/colbertv2.0_128_query_vectors_100000.fvec",
                                                    "wikipedia_squad/1M/colbertv2.0_128_indices_b1000000_q100000_k100.ivec"));
+
+        // ********** Bigger datasets manually downloaded from S3 **********
+        put("ada_002", new MultiFileDatasource("ada_002",
+                "wikipedia_squad/1M/ada_002_1000000_base_vectors.fvec",
+                "wikipedia_squad/1M/ada_002_1000000_query_vectors_10000.fvec",
+                "wikipedia_squad/1M/ada_002_1000000_indices_query_10000.ivec"));
+        put("intfloat_e5_base", new MultiFileDatasource("intfloat_e5_base",
+                "wikipedia_squad/1M/intfloat_e5-base-v2_1000000_base_vectors.fvec",
+                "wikipedia_squad/1M/intfloat_e5-base-v2_1000000_query_vectors_10000.fvec",
+                "wikipedia_squad/1M/intfloat_e5-base-v2_1000000_indices_query_10000.ivec"));
+        put("intfloat_e5_large", new MultiFileDatasource("intfloat_e5_large",
+                "wikipedia_squad/1M/intfloat_e5-large-v2_1000000_base_vectors.fvec",
+                "wikipedia_squad/1M/intfloat_e5-large-v2_1000000_query_vectors_10000.fvec",
+                "wikipedia_squad/1M/intfloat_e5-large-v2_1000000_indices_query_10000.ivec"));
+        put("intfloat_e5_small", new MultiFileDatasource("intfloat_e5_small",
+                "wikipedia_squad/1M/intfloat_e5-small-v2_1000000_base_vectors.fvec",
+                "wikipedia_squad/1M/intfloat_e5-small-v2_1000000_query_vectors_10000.fvec",
+                "wikipedia_squad/1M/intfloat_e5-small-v2_1000000_indices_query_10000.ivec"));
+        put("textembedding-gecko", new MultiFileDatasource("textembedding-gecko",
+                "wikipedia_squad/1M/textembedding-gecko_1000000_base_vectors.fvec",
+                "wikipedia_squad/1M/textembedding-gecko_1000000_query_vectors_10000.fvec",
+                "wikipedia_squad/1M/textembedding-gecko_1000000_indices_query_10000.ivec"));
+        // *******************************************************************
+
+
         put("nv-qa-v4-100k", new MultiFileDatasource("nv-qa-v4-100k",
                                                      "wikipedia_squad/100k/nvidia-nemo_1024_base_vectors_100000.fvec",
                                                      "wikipedia_squad/100k/nvidia-nemo_1024_query_vectors_10000.fvec",
