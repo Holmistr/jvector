@@ -46,6 +46,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
@@ -74,12 +75,20 @@ public class Grid {
                        List<Integer> efSearchFactor) throws IOException
     {
         var testDirectory = Files.createTempDirectory(dirPrefix);
+        int warmupIterations = Integer.valueOf(System.getProperty("warmupIterations", "0"));
         try {
             for (int M : mGrid) {
                 for (int efC : efConstructionGrid) {
                     for (var bc : buildCompressors) {
-                        var compressor = getCompressor(bc, ds);
-                        runOneGraph(M, efC, compressor, compressionGrid, efSearchFactor, ds, testDirectory);
+                        for (int i = 0; i <= warmupIterations; i++) {
+                            if (i != warmupIterations) {
+                                System.out.println("=== [" + new Timestamp(System.currentTimeMillis()) + "]  Running a warmup iteration #" + i);
+                            } else {
+                                System.out.println(">>> [" + new Timestamp(System.currentTimeMillis()) + "] Running the benchmark");
+                            }
+                            var compressor = getCompressor(bc, ds);
+                            runOneGraph(M, efC, compressor, compressionGrid, efSearchFactor, ds, testDirectory);
+                        }
                     }
                 }
             }
@@ -113,7 +122,8 @@ public class Grid {
         }
         var start = System.nanoTime();
         var onHeapGraph = builder.build(floatVectors);
-        System.out.format("Build (%s) M=%d ef=%d in %.2fs with avg degree %.2f and %.2f short edges%n",
+        System.out.format("[%s] Build (%s) M=%d ef=%d in %.2fs with avg degree %.2f and %.2f short edges%n",
+                          new Timestamp(System.currentTimeMillis()),
                           buildCompressor == null ? "full res" : buildCompressor.toString(),
                           M,
                           efConstruction,
@@ -133,7 +143,7 @@ public class Grid {
                 CompressedVectors cv = null;
                 var fusedCompatible = compressor instanceof ProductQuantization && ((ProductQuantization) compressor).getClusterCount() == 32;
                 if (compressor == null) {
-                    System.out.format("Uncompressed vectors%n");
+                    System.out.format("[" + new Timestamp(System.currentTimeMillis()) + "] Uncompressed vectors%n");
                 } else {
                     start = System.nanoTime();
                     var quantizedVectors = compressor.encodeAll(ds.baseVectors);
@@ -174,7 +184,7 @@ public class Grid {
 
     private static void testConfiguration(ConfiguredSystem cs, List<Integer> efSearchOptions) {
         var topK = cs.ds.groundTruth.get(0).size();
-        System.out.format("Using %s:%n", cs.index);
+        System.out.format("[" + new Timestamp(System.currentTimeMillis()) + "] Using %s:%n", cs.index);
         for (int overquery : efSearchOptions) {
             var start = System.nanoTime();
             var pqr = performQueries(cs, topK, topK * overquery, 2);
